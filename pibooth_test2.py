@@ -1,23 +1,27 @@
 import numpy as np
 import cv2
 import datetime
-from random import randint
+import random
+# from random import randint
 import time
+import logging
 
 def GetDateTimeString():
     dt = str(datetime.datetime.now()).split(".")[0]
     clean = dt.replace(" ","_").replace(":","_")
     return clean
 
-def GetBackground():
+def GetBackground(bgNumber):
+    bgImageName = './backgrounds/' + str(new_img_nums[bgNumber]) + '.jpg'
+
     bgImage = './backgrounds/space.jpg'
     return cv2.imread(bgImage)
 
 def GetImage(bg):
     ret, frame = cam.read()
     sensitivity = 1
-    lowerRange = np.array([0, 0, 255 - sensitivity])
-    upperRange = np.array([255, sensitivity, 255])
+    lowerRange = np.array([0, 0, 255 - sensitivity]) # this is currently set to white
+    upperRange = np.array([255, sensitivity, 255]) # this is currently set to white
 
     #Mask the green screen
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -47,7 +51,10 @@ cam = cv2.VideoCapture(0)
 cam.set(3,width)
 cam.set(4,height)
 
-bg = GetBackground()
+bgNumber = 0
+new_img_nums = random.sample(range(1,9), 4)
+
+bg = GetBackground(bgNumber)
 clicked = False
 clickedTime = {}
 
@@ -60,11 +67,12 @@ while(True):
         secs = int(elapsed.total_seconds())
         if secs > countdownSeconds : # if five seconds are up, save the current image
             clicked = False
-            # cv2.imwrite('/home/pi/pibooth/' + GetDateTimeString() + '.jpg',img)
-            cv2.imwrite('./newImages/abm_' + GetDateTimeString() + '.jpg',img)
+            # cv2.imwrite('/home/pi/pibooth/newImages/img_' + GetDateTimeString() + '.jpg',img)
+            cv2.imwrite('./newImages/img_' + GetDateTimeString() + '.jpg',img)
             cv2.imshow('Photobooth',img)
             time.sleep(displayPhotoSeconds) # show the photo for 5 seconds
-            bg = GetBackground() # get a new background
+            bgNumber += 1
+            bg = GetBackground(bgNumber) # get a new background
         else : # show the countdown timer
             text = str(5 - secs) + "..."
             textSize, base = cv2.getTextSize(text, fontFace, fontScale, thickness)
@@ -75,6 +83,8 @@ while(True):
         clickedTime = datetime.datetime.now()
         clicked = True
     elif key == 27 : # on escape, close the program
+        break
+    elif bgNumber == 3
         break
 
     cv2.imshow('Photobooth',img) #display masked image
