@@ -84,7 +84,7 @@ while(True):
         clicked = True
     elif key == 27 : # on escape, close the program
         break
-    elif bgNumber == 3
+    elif bgNumber == 4:
         break
 
     cv2.imshow('Photobooth',img) #display masked image
