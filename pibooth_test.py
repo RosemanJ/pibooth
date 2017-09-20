@@ -16,17 +16,24 @@ def GetBackground():
 
     new_img_num = randint(1,9)
     # bgImage = '/home/pi/pibooth/backgrounds/' + str(new_img_num) + '.jpg'
-    bgImage = './backgrounds/' + str(new_img_num) + '.jpg'
+    # bgImage = './backgrounds/' + str(new_img_num) + '.jpg'
+    bgImage = './backgrounds/space.jpg'
+
     return cv2.imread(bgImage)
 
 def GetImage(bg):
     ret, frame = cap.read()
 
-    logging.warning(frame)  # will print a message to the console
+    sensitivity = 1
+    lowerRange = np.array([0, 0, 255 - sensitivity])
+    upperRange = np.array([255, sensitivity, 255])
 
-    #Mask the green screen
+    # logging.warning(frame)  # will print a message to the console
+
+    # Mask the green screen
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    image_mask = cv2.inRange(hsv, np.array([40,50,50]), np.array([80,255,255]))
+    # image_mask = cv2.inRange(hsv, np.array([40,50,50]), np.array([80,255,255]))
+    image_mask = cv2.inRange(hsv, lowerRange, upperRange)
     bg_mask = cv2.bitwise_and(bg, bg, mask = image_mask)
     fg_mask = cv2.bitwise_and(frame, frame, mask = cv2.bitwise_not(image_mask))
     img = cv2.add(bg_mask, fg_mask)
@@ -34,12 +41,13 @@ def GetImage(bg):
 
 #Setup WebCam
 cap = cv2.VideoCapture(0)
-width = 1920
-height = 1080
+# width = 1920
+# height = 1080
+width = 640
+height = 480
 
 cap.set(3, width)
 cap.set(4, height)
-
 
 bg = GetBackground()
 img = GetImage(bg) #get masked image from webcam
