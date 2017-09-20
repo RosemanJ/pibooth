@@ -12,14 +12,14 @@ def GetDateTimeString():
     return clean
 
 def GetBackground(bgNumber):
-    bgImageName = './backgrounds/' + str(new_img_nums[bgNumber]) + '.jpg'
-
+    # bgImage = './backgrounds/' + str(new_img_nums[bgNumber]) + '.jpg'
     bgImage = './backgrounds/space.jpg'
     return cv2.imread(bgImage)
 
 def GetImage(bg):
     ret, frame = cam.read()
-    sensitivity = 1
+
+    sensitivity = 1 # play with sensitivity to get rid of noise...
     lowerRange = np.array([0, 0, 255 - sensitivity]) # this is currently set to white
     upperRange = np.array([255, sensitivity, 255]) # this is currently set to white
 
@@ -32,18 +32,18 @@ def GetImage(bg):
 
     return img
 
-#Setup window for full screen
+# Set up window for full screen
 cv2.namedWindow("Photobooth", cv2.WND_PROP_FULLSCREEN)
 # cv2.setWindowProperty("Photobooth", cv2.WND_PROP_FULLSCREEN, 1)
 
-#options for countdown timer
+# options for countdown timer
 fontFace = cv2.FONT_HERSHEY_SIMPLEX
 fontScale = 1
 thickness = 4
 countdownSeconds = 5
 displayPhotoSeconds = 5
 
-#Setup WebCam
+# Set up WebCam
 width = 640
 height = 480
 
@@ -74,7 +74,10 @@ while(True):
             bgNumber += 1
             bg = GetBackground(bgNumber) # get a new background
         else : # show the countdown timer
-            text = str(5 - secs) + "..."
+            if secs - 5 == 1:
+                text = 'Say cheese!'
+            else:
+                text = str(5 - secs) + "..."
             textSize, base = cv2.getTextSize(text, fontFace, fontScale, thickness)
             textWidth = int((width - textSize[0]) / 2)
             textHeight = int((height + textSize[1]) / 2)
@@ -85,6 +88,9 @@ while(True):
     elif key == 27 : # on escape, close the program
         break
     elif bgNumber == 4:
+        # assemble photos into strip
+        # print strip
+        # reset app
         break
 
     cv2.imshow('Photobooth',img) #display masked image
