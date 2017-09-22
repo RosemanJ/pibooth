@@ -5,7 +5,7 @@ cam = cv2.VideoCapture(0)
 cam.set(3, 640)
 cam.set(4, 480)
 
-bg = cv2.imread('./backgrounds/space.jpg', 1)
+bg = cv2.imread('/home/pi/pibooth/backgrounds/space.jpg', 1)
 sensitivity = 1
 lowerRange = np.array([0, 0, 255 - sensitivity])
 upperRange = np.array([255, sensitivity, 255])
