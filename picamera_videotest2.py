@@ -36,11 +36,19 @@ camera.resolution = (640, 480)
 camera.framerate = 32
 rawCapture = PiRGBArray(camera, size=(640, 480))
 
-new_img_nums = random.sample(range(1,9), 4)
-clicked = False
-clickedTime = {}
+# options for countdown timer
+fontFace = cv2.FONT_HERSHEY_SIMPLEX
+fontScale = 1
+thickness = 4
 countdownSeconds = 5
 displayPhotoSeconds = 5
+
+# countdown to snapshot
+clicked = False
+clickedTime = {}
+
+# backgrounds
+new_img_nums = random.sample(range(1,9), 4)
 bgNumber = 0
 bg = GetBackground(bgNumber)
 
