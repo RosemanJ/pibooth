@@ -80,6 +80,12 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	# key = cv2.waitKey(1) & 0xFF
 	key = cv2.waitKey(1)
 
+	text = 'Press -SPACEBAR- to start 5 second countdown'
+    textSize, base = cv2.getTextSize(text, fontFace, fontScale, thickness)
+    textWidth = int((width - textSize[0]) / 2)
+    textHeight = int((height + textSize[1]) / 2)
+	cv2.putText(maskedImg, text, (textWidth, textHeight), fontFace, fontScale, (255, 255, 255), thickness)
+
 	# clear the stream in preparation for the next frame
 	rawCapture.truncate(0)
 
@@ -95,14 +101,14 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	        bgNumber += 1
 	        bg = GetBackground(bgNumber) # get a new background
 	    else : # show the countdown timer
-	        if secs - 5 == 1:
+	        if 5 - secs == 1:
 	            text = 'Say cheese!'
 	        else:
 	            text = str(5 - secs) + "..."
-	            textSize, base = cv2.getTextSize(text, fontFace, fontScale, thickness)
-	            textWidth = int((width - textSize[0]) / 2)
-	            textHeight = int((height + textSize[1]) / 2)
-	            cv2.putText(maskedImg, text, (textWidth, textHeight), fontFace, fontScale, (255, 255, 255), thickness)
+            textSize, base = cv2.getTextSize(text, fontFace, fontScale, thickness)
+            textWidth = int((width - textSize[0]) / 2)
+            textHeight = int((height + textSize[1]) / 2)
+	        cv2.putText(maskedImg, text, (textWidth, textHeight), fontFace, fontScale, (255, 255, 255), thickness)
 	# if the `q` key was pressed, break from the loop
 	# if key == ord("q"):
 	# 	break
