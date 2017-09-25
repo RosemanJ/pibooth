@@ -15,7 +15,6 @@ def GetDateTimeString():
 
 def GetBackground(bgNumber):
     bgImage = './backgrounds/' + str(new_img_nums[bgNumber]) + '.jpg'
-    # bgImage = '/home/pi/pibooth/backgrounds/space.jpg'
     logging.warning(bgImage)
     return cv2.imread(bgImage)
 
@@ -75,9 +74,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	maskedImg = GetImage(bg, image) #get masked image from webcam
 
 	# show the frame
-	# cv2.imshow("Frame", image)
 	cv2.imshow("Frame", maskedImg)
-	# key = cv2.waitKey(1) & 0xFF
 	key = cv2.waitKey(1)
 
 	text = 'Press -SPACEBAR- to start 5 second countdown'
@@ -95,7 +92,6 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	    if secs > countdownSeconds : # if five seconds are up, save the current image
 	        clicked = False
 	        cv2.imwrite('/home/pi/pibooth/newImages/img_' + GetDateTimeString() + '.jpg',maskedImg)
-	        # cv2.imwrite('./newImages/img_' + GetDateTimeString() + '.jpg',img)
 	        cv2.imshow('Frame',maskedImg)
 	        time.sleep(displayPhotoSeconds) # show the photo for 5 seconds
 	        bgNumber += 1
@@ -109,9 +105,6 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
             textWidth = int((width - textSize[0]) / 2)
             textHeight = int((height + textSize[1]) / 2)
 	        cv2.putText(maskedImg, text, (textWidth, textHeight), fontFace, fontScale, (255, 255, 255), thickness)
-	# if the `q` key was pressed, break from the loop
-	# if key == ord("q"):
-	# 	break
 	elif key == 27:
 		break
 	elif key == 32:
