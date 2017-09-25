@@ -1,7 +1,11 @@
 # import the necessary packages
 from picamera.array import PiRGBArray
 from picamera import PiCamera
+import numpy as np
+import random
+import datetime
 import time
+import logging
 import cv2
 
 def GetDateTimeString():
@@ -10,16 +14,21 @@ def GetDateTimeString():
     return clean
 
 def GetBackground(bgNumber):
-    # bgImage = './backgrounds/' + str(new_img_nums[bgNumber]) + '.jpg'
-    bgImage = '/home/pi/pibooth/backgrounds/space.jpg'
+    bgImage = './backgrounds/' + str(new_img_nums[bgNumber]) + '.jpg'
+    # bgImage = '/home/pi/pibooth/backgrounds/space.jpg'
+    logging.warning(bgImage)
     return cv2.imread(bgImage)
 
 def GetImage(bg, frame):
     # ret, frame = cam.read()
 
     sensitivity = 1 # play with sensitivity to get rid of noise...
-    lowerRange = np.array([0, 0, 255 - sensitivity]) # this is currently set to white
-    upperRange = np.array([255, sensitivity, 255]) # this is currently set to white
+    # lowerRange = np.array([0, 0, 255 - sensitivity]) # this is currently set to white
+    # upperRange = np.array([255, sensitivity, 255]) # this is currently set to white
+    # lowerRange = np.array([40, 50, 50 - sensitivity]) # this is currently set to green
+    # upperRange = np.array([80, sensitivity, 255]) # this is currently set to green
+    lowerRange = np.array([40, 50, 50]) # this is currently set to green
+    upperRange = np.array([80, 255, 255]) # this is currently set to green
 
     #Mask the green screen
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -31,10 +40,12 @@ def GetImage(bg, frame):
     return img
 
 # initialize the camera and grab a reference to the raw camera capture
+width = 640
+height = 480
 camera = PiCamera()
-camera.resolution = (640, 480)
+camera.resolution = (width, height)
 camera.framerate = 32
-rawCapture = PiRGBArray(camera, size=(640, 480))
+rawCapture = PiRGBArray(camera, size=(width, height))
 
 # options for countdown timer
 fontFace = cv2.FONT_HERSHEY_SIMPLEX
@@ -72,26 +83,26 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	# clear the stream in preparation for the next frame
 	rawCapture.truncate(0)
 
-    if clicked == True : # if countdown timer started
-        elapsed = datetime.datetime.now() - clickedTime
-        secs = int(elapsed.total_seconds())
-        if secs > countdownSeconds : # if five seconds are up, save the current image
-            clicked = False
-            cv2.imwrite('/home/pi/pibooth/newImages/img_' + GetDateTimeString() + '.jpg',maskedImg)
-            # cv2.imwrite('./newImages/img_' + GetDateTimeString() + '.jpg',img)
-            cv2.imshow('Frame',maskedImg)
-            time.sleep(displayPhotoSeconds) # show the photo for 5 seconds
-            bgNumber += 1
-            bg = GetBackground(bgNumber) # get a new background
-        else : # show the countdown timer
-            if secs - 5 == 1:
-                text = 'Say cheese!'
-            else:
-                text = str(5 - secs) + "..."
-            textSize, base = cv2.getTextSize(text, fontFace, fontScale, thickness)
-            textWidth = int((width - textSize[0]) / 2)
-            textHeight = int((height + textSize[1]) / 2)
-            cv2.putText(img, text, (textWidth, textHeight), fontFace, fontScale, (255, 255, 255), thickness)
+	if clicked == True : # if countdown timer started
+	    elapsed = datetime.datetime.now() - clickedTime
+	    secs = int(elapsed.total_seconds())
+	    if secs > countdownSeconds : # if five seconds are up, save the current image
+	        clicked = False
+	        cv2.imwrite('/home/pi/pibooth/newImages/img_' + GetDateTimeString() + '.jpg',maskedImg)
+	        # cv2.imwrite('./newImages/img_' + GetDateTimeString() + '.jpg',img)
+	        cv2.imshow('Frame',maskedImg)
+	        time.sleep(displayPhotoSeconds) # show the photo for 5 seconds
+	        bgNumber += 1
+	        bg = GetBackground(bgNumber) # get a new background
+	    else : # show the countdown timer
+	        if secs - 5 == 1:
+	            text = 'Say cheese!'
+	        else:
+	            text = str(5 - secs) + "..."
+	            textSize, base = cv2.getTextSize(text, fontFace, fontScale, thickness)
+	            textWidth = int((width - textSize[0]) / 2)
+	            textHeight = int((height + textSize[1]) / 2)
+	            cv2.putText(maskedImg, text, (textWidth, textHeight), fontFace, fontScale, (255, 255, 255), thickness)
 	# if the `q` key was pressed, break from the loop
 	# if key == ord("q"):
 	# 	break
@@ -100,8 +111,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	elif key == 32:
 		clickedTime = datetime.datetime.now()
 		clicked = True
-    elif bgNumber == 4:
-        # assemble photos into strip
-        # print strip
-        # reset app
-        break
+	elif bgNumber == 4:
+	        # assemble photos into strip
+	        # print strip
+	        # reset app
+	        break
